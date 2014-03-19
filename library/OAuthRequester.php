@@ -30,8 +30,6 @@
  * THE SOFTWARE.
  */
 
-namespace oauthphp;
-
 require_once dirname(__FILE__) . '/OAuthRequestSigner.php';
 require_once dirname(__FILE__) . '/body/OAuthBodyContentDisposition.php';
 

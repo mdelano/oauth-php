@@ -31,7 +31,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace oauthphp;
 require_once dirname(__FILE__) . '/OAuthException2.php';
 
 class OAuthStore
