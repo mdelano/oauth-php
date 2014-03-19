@@ -1,0 +1,15 @@
+{
+    "name": "mdelano/oauth-php",
+    "description": "Fork of Oauth-PHP http://oauth-php.googlecode.com",
+    "license": "mit",
+    "authors": [
+        {
+            "name": "mdelano",
+            "email": "mike@mediasilo.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+
+    }
+}
