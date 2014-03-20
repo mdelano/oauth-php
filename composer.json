@@ -13,9 +13,7 @@
 
     },
     "autoload": {
-        "psr-0": {
-            "library\\": "/"
-        }
-
+        "classmap": ["vendor/oauth-php/library/"]
     }
+
 }
