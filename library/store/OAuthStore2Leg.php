@@ -66,8 +66,7 @@ class OAuthStore2Leg extends OAuthStoreAbstract
 			'consumer_key' => $this->consumer_key,
 			'consumer_secret' => $this->consumer_secret,
 			'signature_methods' => $this->signature_method,
-			'token' => $this->token_type,
-			'token_secret' => $this->token_secret
+			'token' => $this->token_type
 		);	
 	}
 	public function getServerTokenSecrets ( $consumer_key, $token, $token_type, $user_id, $name = '' ) 	{ throw new OAuthException2("OAuthStore2Leg doesn't support " . __METHOD__); }
