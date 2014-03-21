@@ -44,7 +44,7 @@ class OAuthStore2LegProxyCreds extends OAuthStore2Leg
 	 */
 	public function __construct( $options = array() )
 	{
-		if(isset($options['consumer_key']) && isset($options['consumer_secret'] && isset($options['access_token'])))
+		if(isset($options['consumer_key']) && isset($options['consumer_secret']) && isset($options['access_token']))
 		{
 			$this->consumer_key = $options['consumer_key'];
 			$this->consumer_secret = $options['consumer_secret'];
@@ -63,7 +63,8 @@ class OAuthStore2LegProxyCreds extends OAuthStore2Leg
 			'consumer_key' => $this->consumer_key,
 			'consumer_secret' => $this->consumer_secret,
 			'signature_methods' => $this->signature_method,
-			'token' => $this->token_type
+			'token' => $this->token_type,
+			'token_secret' => $this->token_secret
 		);	
 	}
 	public function getServerTokenSecrets ( $consumer_key, $token, $token_type, $user_id, $name = '' ) 	{ throw new OAuthException2("OAuthStore2Leg doesn't support " . __METHOD__); }
