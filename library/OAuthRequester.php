@@ -37,6 +37,7 @@ require_once dirname(__FILE__) . '/body/OAuthBodyContentDisposition.php';
 class OAuthRequester extends OAuthRequestSigner
 {
 	protected $files;
+    protected $hostContext = null;
 
 	/**
 	 * Construct a new request signer.  Perform the request with the doRequest() method below.
@@ -57,6 +58,7 @@ class OAuthRequester extends OAuthRequestSigner
 	 * @param array params		name=>value array with request parameters
 	 * @param string body		optional body to send
 	 * @param array files		optional files to send (max 1 till OAuth support multipart/form-data posts)
+     * @throws OAuthException2;
 	 */
 	function __construct ( $request, $method = 'GET', $params = null, $body = null, $files = null )
 	{
@@ -83,6 +85,15 @@ class OAuthRequester extends OAuthRequestSigner
 	}
 
 
+    /**
+     * Sets a Mediasilo HostContext Header to be sent with request
+     * @param $hostname
+     */
+    function setHostContext($hostname) {
+        $this->hostContext = $hostname;
+    }
+
+
 	/**
 	 * Perform the request, returns the response code, headers and body.
 	 * 
@@ -93,8 +104,9 @@ class OAuthRequester extends OAuthRequestSigner
 	 *  - token_ttl Time to live
 	 *  - server_uri The server uri
 	 *  - boolean oauth_as_header set to false to include oauth parameters in query string. Default true (includes on headers)
-	 * @exception OAuthException2 when authentication not accepted
-	 * @exception OAuthException2 when signing was not possible
+	 * @throws OAuthException2 when authentication not accepted
+	 * @throws OAuthException2 when signing was not possible
+     * @throws OAuthHttpException
 	 * @return array (code=>int, headers=>array(), body=>string)
 	 */
 	function doRequest ( $usr_id = 0, $curl_options = array(), $options = array() )
@@ -113,7 +125,14 @@ class OAuthRequester extends OAuthRequestSigner
 			$this->setBody($body);
 			$curl_options = $this->prepareCurlOptions($curl_options, $extra_headers);
 		}
-		$this->sign($usr_id, null, $name);
+
+        // Merge in a MediaSiloHostContext header to the request if we have a hostContext set
+        if (!is_null($this->hostContext))
+        {
+            $curl_options = $this->prepareCurlOptions($curl_options, array('MediaSiloHostContext' => $this->hostContext));
+        }
+
+        $this->sign($usr_id, null, $name);
 		$text   = $this->curl_raw($curl_options, (isset($options['oauth_as_header']) ? $options['oauth_as_header'] : true));
 		$result = $this->curl_parse($text);	
 		if ($result['code'] >= 400)
@@ -147,8 +166,8 @@ class OAuthRequester extends OAuthRequestSigner
 	 *  - server_uri The server uri
 	 *  - boolean oauth_as_header set to false to include oauth parameters in query string. Default true (includes on headers)
 	 * @param array curl_options	optional extra options for curl request
-	 * @exception OAuthException2 when no key could be fetched
-	 * @exception OAuthException2 when no server with consumer_key registered
+	 * @throws OAuthException2 when no key could be fetched
+	 * @throws OAuthException2 when no server with consumer_key registered
 	 * @return array (authorize_uri, token)
 	 */
 	static function requestRequestToken ( $consumer_key, $usr_id, $params = null, $method = 'POST', $options = array(), $curl_options = array() )
@@ -233,8 +252,8 @@ class OAuthRequester extends OAuthRequestSigner
 	 *  - boolean oauth_as_header set to false to include oauth parameters in query string. Default true (includes on headers)
 	 * @param array curl_options	optional extra options for curl request
 	 *  
-	 * @exception OAuthException2 when no key could be fetched
-	 * @exception OAuthException2 when no server with consumer_key registered
+	 * @throws OAuthException2 when no key could be fetched
+	 * @throws OAuthException2 when no server with consumer_key registered
 	 */
 	static function requestAccessToken ( $consumer_key, $token, $usr_id, $method = 'POST', $options = array(), $curl_options = array())
 	{
@@ -312,7 +331,7 @@ class OAuthRequester extends OAuthRequestSigner
 	 * 
 	 * @param array opts the curl options.
 	 * @param boolean oauth_as_header		(optional) set to false to include oauth parameters in query string
-	 * @exception OAuthException2 when temporary file for PUT operation could not be created
+	 * @throws OAuthException2 when temporary file for PUT operation could not be created
 	 * @return string the result of the curl action
 	 */
 	protected function curl_raw ( $opts = array(), $oauth_as_header = true )
